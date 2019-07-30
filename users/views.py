@@ -1,6 +1,8 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.generic import DetailView
+from django.contrib.auth.models import User
 from .forms import UserRegisterForm,UserUpdateForm,ProfileUpdateForm
 
 
@@ -15,6 +17,14 @@ def register(request):
     else:
         form=UserRegisterForm()
     return render(request,'users/register.html',{'form':form})
+
+
+class UserDetailView(DetailView):
+    template_name='users/profile_detail.html'
+    queryset=User.objects.all()
+
+    def get_object(self):
+        return get_object_or_404(User,username__iexact=self.kwargs.get("username"))
 
 
 @login_required

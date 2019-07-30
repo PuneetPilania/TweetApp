@@ -7,9 +7,29 @@
     <div class="media-body">
       <h2 class="account-heading">{{ user.username }}</h2>
       <p class="text-secondary">{{ user.email }}</p>
+
+      <hr/>
+      <h3>Following <small>{{ user.profile.get_following.count }}</small></h3>
+      {% for users in user.profile.get_following %}
+      <a href="/{{users.username}}">{{users.username}}</a>
+      {% empty %}
+        <h6>Not following any users</h6>
+      {% endfor %}
+
+      <hr/>
+      <h3>Followed By</h3>
+      {% for profile in user.followed_by.all %}
+      <a href="/{{ profile.user.username }}">{{profile.user.username}}</a><br>
+      {% empty %}
+        <h6>Not followed any users</h6>
+      {% endfor %}
+
+
+
     </div>
   </div>
-  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+ 
+        <form method="post" enctype="multipart/form-data">{% csrf_token %}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4"> Profile Info </legend>
                 {{ u_form|crispy }}
@@ -20,5 +40,7 @@
                 <button class="btn btn-outline-info" type="submit">Update</button>
             </div>
         </form>
-</div>
+        </div>
+
+
 {% endblock content %}
