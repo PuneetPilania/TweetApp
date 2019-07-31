@@ -1,8 +1,38 @@
 {% extends "blog/base.html" %}
-
+{% load crispy_forms_tags %}
 {% block content %}
 
 
+<div class="content-section">
+  <div class="media">
+    <img class="rounded-circle account-img" src='{{ user.profile.image.url }}'>
+    <div class="media-body">
+      <h2 class="account-heading">{{ user.username }}</h2>
+      <p class="text-secondary">{{ user.email }}</p>
+      <hr/>
+      <p> Followers: {{ user.followed_by.all.count }} </p>
+      <p>
+        <a class="btn btn-link" href="{% url 'follow' username=user.username %}">Follow</a>
+      </p>
+
+      <hr/>
+      <h3>Following <small>{{ user.profile.get_following.count }}</small></h3>
+      {% for users in user.profile.get_following %}
+      <a href="/home/{{users.username}}">{{users.username}}</a>
+      {% empty %}
+        <h6>Not following any users</h6>
+      {% endfor %}
+
+      <hr/>
+      <h3>Followed By</h3>
+      {% for profile in user.followed_by.all %}
+      <a href="/home/{{ profile.user.username }}">{{profile.user.username}}</a><br>
+      {% empty %}
+        <h6>Not followed any users</h6>
+      {% endfor %}
+   </div>
+  </div>
+ </div>
 
 
     <h1 class="mb-3">Posts by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h1>

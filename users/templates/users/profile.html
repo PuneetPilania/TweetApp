@@ -11,7 +11,7 @@
       <hr/>
       <h3>Following <small>{{ user.profile.get_following.count }}</small></h3>
       {% for users in user.profile.get_following %}
-      <a href="/{{users.username}}">{{users.username}}</a>
+      <a href="/home/{{users.username}}">{{users.username}}</a>
       {% empty %}
         <h6>Not following any users</h6>
       {% endfor %}
@@ -19,7 +19,7 @@
       <hr/>
       <h3>Followed By</h3>
       {% for profile in user.followed_by.all %}
-      <a href="/{{ profile.user.username }}">{{profile.user.username}}</a><br>
+      <a href="/home/{{ profile.user.username }}">{{profile.user.username}}</a><br>
       {% empty %}
         <h6>Not followed any users</h6>
       {% endfor %}
