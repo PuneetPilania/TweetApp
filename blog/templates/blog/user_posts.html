@@ -1,87 +1,67 @@
 {% extends "blog/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-
-
 <div class="content-section">
-  <div class="media">
-    <img class="rounded-circle account-img" src='{{ user.profile.image.url }}'>
+    <div class="media">
+        <img class="rounded-circle account-img" src='{{ user.profile.image.url }}'>
+        <div class="media-body">
+            <h2 class="account-heading">{{ user.username }}</h2>
+            <p class="text-secondary">{{ user.email }}</p>
+            <hr />
+            <p> Followers: {{ user.followed_by.all.count }} </p>
+            <p>
+                <a class="btn btn-link" href="{{ user.profile.get_follow_url }}">{% if following %} Unfollow {% else %} Follow {% endif %}
+                </a>
+            </p>
+            <hr />
+            <h3>Following <small>{{ user.profile.get_following.count }}</small></h3>
+            {% for users in user.profile.get_following %}
+            <a href="/{{users.username}}">{{users.username}}</a>
+            {% empty %}
+            <h6>Not following any users</h6>
+            {% endfor %}
+            <hr />
+            <h3>Followed By</h3>
+            {% for profile in user.followed_by.all %}
+            <a href="/{{ profile.user.username }}">{{profile.user.username}}</a><br>
+            {% empty %}
+            <h6>Not followed any users</h6>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<h1 class="mb-3">Posts by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h1>
+{% for post in posts %}
+<article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
     <div class="media-body">
-      <h2 class="account-heading">{{ user.username }}</h2>
-      <p class="text-secondary">{{ user.email }}</p>
-      <hr/>
-      <p> Followers: {{ user.followed_by.all.count }} </p>
-      <p>
-        <a class="btn btn-link" href="{% url 'follow' username=user.username %}">Follow</a>
-      </p>
-
-      <hr/>
-      <h3>Following <small>{{ user.profile.get_following.count }}</small></h3>
-      {% for users in user.profile.get_following %}
-      <a href="/home/{{users.username}}">{{users.username}}</a>
-      {% empty %}
-        <h6>Not following any users</h6>
-      {% endfor %}
-
-      <hr/>
-      <h3>Followed By</h3>
-      {% for profile in user.followed_by.all %}
-      <a href="/home/{{ profile.user.username }}">{{profile.user.username}}</a><br>
-      {% empty %}
-        <h6>Not followed any users</h6>
-      {% endfor %}
-   </div>
-  </div>
- </div>
-
-
-    <h1 class="mb-3">Posts by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h1>
-    {% for post in posts %}
-         <article class="media content-section">
-          <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
-              <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
-            </div>
-            
-            <p class="article-content">{{ post.content }}</p>
-          {% if post.image %}
-             <a href="{% url 'blog-detail' post.id %}" ><img src="{{ post.image.url }}" class="card-img-top" alt="..."></a>
-              </article>
-            {% else %}
-              
-              </article>
-            {% endif %}
+        <div class="article-metadata">
+            <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
+            <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+        </div>
+        <p class="article-content">{{ post.content }}</p>
+        {% if post.image %}
+        <a href="{% url 'blog-detail' post.id %}"><img src="{{ post.image.url }}" class="card-img-top" alt="..."></a>
+</article>
+{% else %}
+</article>
+{% endif %}
+{% endfor %}
+<!-- For Pagiante  -->
+{% if is_paginated %}
+{% if page_obj.has_previous %}
+<a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+<a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+{% endif %}
+{% for num in page_obj.paginator.page_range %}
+{% if page_obj.number == num %}
+<a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+{% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+    {% endif %}
     {% endfor %}
-
-
-
-
-
-    <!-- For Pagiante  -->
-    {% if is_paginated %}
-
-      {% if page_obj.has_previous %}
-        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-      {% endif %}
-
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% endif %}
-      {% endfor %}
-
-      {% if page_obj.has_next %}
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-      {% endif %}
-
-    {% endif %} 
-
-    
-
-{% endblock content %}
+    {% if page_obj.has_next %}
+    <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+    <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+    {% endif %}
+    {% endif %}
+    {% endblock content %}

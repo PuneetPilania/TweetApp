@@ -16,28 +16,24 @@ class BlogListView(LoginRequiredMixin,ListView):
 	paginate_by=5
 
 
+
+
+	def get_context_data(self,*args,**kwargs):
+		im_following = self.request.user.profile.get_following() 
+		posts1=Post.objects.filter(author__in=im_following).order_by('-date_posted')
+		posts2=Post.objects.filter(author=self.request.user).order_by('-date_posted')
+
+		if posts1:
+			posts=posts1 | posts2
+		else:
+			posts=posts2
+
+		return {'posts': posts}
+
+
+
+
 		
-# Two queryset 
-class UserBlogListView(LoginRequiredMixin,ListView):
-	template_name='blog/user_posts.html'
-	paginate_by=5
-	
-
-	def get_queryset(self):
-		return User.objects.all()
-
-	
-	def get_context_data(self,**kwargs):
-		# Call clicked username
-		users=get_object_or_404(User,username__iexact=self.kwargs.get("username"))
-		et=super(UserBlogListView, self).get_context_data(**kwargs)
-		et['user']=users
-		et['posts']=Post.objects.filter(author=users).order_by('-date_posted')
-		return et
-
-
-
-
 # Post detail
 class BlogDetailView(LoginRequiredMixin,DetailView):
 	model=Post
@@ -72,7 +68,7 @@ class BlogUpdateView(LoginRequiredMixin,UserPassesTestMixin,UpdateView):
 
 class BlogDeleteView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
 	model=Post
-	success_url='/'
+	success_url='/home'
 
 	def test_func(self):
 		post=self.get_object()

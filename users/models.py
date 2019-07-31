@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from PIL import Image
 from django.conf import settings
+from django.urls import reverse_lazy
 
 
 class UserProfileManager(models.Manager):
@@ -16,6 +16,25 @@ class UserProfileManager(models.Manager):
 			pass
 		return qs
 
+	def toggle_follow(self,user,to_toggle_user):
+		user_profile, created = Profile.objects.get_or_create(user=user)
+		if to_toggle_user in user_profile.following.all():
+			user_profile.following.remove(to_toggle_user)
+			added = False
+		else:
+			user_profile.following.add(to_toggle_user)
+			added=True
+			return added
+
+	def is_following(self, user, followed_by_user):
+		user_profile, created = Profile.objects.get_or_create(user=user)
+		if created:
+			return False
+		if followed_by_user in user_profile.following.all():
+			return True
+		return False 
+
+  
 
 class Profile(models.Model):
     user=models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile', on_delete=models.CASCADE)
@@ -35,6 +54,11 @@ class Profile(models.Model):
     	return users.exclude(username=self.user.username)
 
 
+    def get_follow_url(self):
+    	return reverse_lazy("follow", kwargs={"username":self.user.username})
 
+
+    def get_absolute_url(self):
+    	return reverse_lazy("user-posts", kwargs={"username":self.user.username})
 
 
