@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.views import View
 from .models import Post
 from django.urls import reverse_lazy
+from math import ceil
 
 
 # All Post List View
@@ -14,9 +15,6 @@ class BlogListView(LoginRequiredMixin,ListView):
 	context_object_name='posts'
 	ordering=['-date_posted']
 	paginate_by=5
-
-
-
 
 	def get_context_data(self,*args,**kwargs):
 		im_following = self.request.user.profile.get_following() 
@@ -31,6 +29,33 @@ class BlogListView(LoginRequiredMixin,ListView):
 		return {'posts': posts}
 
 
+
+def searchMatch(query, item):
+    '''return true only if query matches the item'''
+    if query in item.username.lower():
+        return True
+    else:
+        return False
+
+def search(request):
+    query = request.GET.get('search')
+    allProds = []
+
+    users=User.objects.all()
+    
+    prod = [item for item in users if searchMatch(query, item)]
+    n = len(prod)
+    nSlides = n // 4 + ceil((n / 4) - (n // 4))
+    if len(prod) != 0:
+    	allProds.append([prod, range(1, nSlides), nSlides])
+    params = {'users': allProds, "msg": ""}
+    if len(allProds) == 0 or len(query)<2:
+        params = {'msg': "Please make sure to enter relevant search query"}
+    return render(request, 'blog/user_list.html', params)
+
+
+		
+		
 
 
 		

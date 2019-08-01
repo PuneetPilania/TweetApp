@@ -1,0 +1,19 @@
+{% extends "blog/base.html" %}
+{% block content %}
+<h1>Users</h1>
+    {% for product, range, nSlides in users %}
+    {% for user in product %}
+		<article class="media content-section">
+    
+    <img class="rounded-circle article-img" src="{{ user.profile.image.url }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a class="mr-2" href="{% url 'user-posts' user %}">{{ user }}</a>
+        </div>
+        <p class="article-content"></p>
+
+</article>
+	{% endfor %}
+    {% endfor %}
+{% endblock content %}
+
