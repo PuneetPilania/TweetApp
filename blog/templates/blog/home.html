@@ -10,11 +10,20 @@
     <div class="media-body">
       
         <div class="article-metadata">
+          
+          {% if post.author != user %}
             <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
+          {% else %}
+            <a class="mr-2" href="{% url 'profile'  %}">{{ post.author }}</a>
+          {% endif %}
+
             <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+          
         </div>
         
          <a class="text-muted" href="{% url 'blog-detail' post.id %}"><p class="article-content">{{ post.content }}</p></a>
+      
+
 
         {% if post.image  %}
 
@@ -23,27 +32,28 @@
         
         {% elif post.video %}
 
-        <video width="500" height="400" controls>
+        <video width="500" height="300" controls>
             <source src="{{ post.video.url }}" type="video/mp4">
             
             Your browser does not support the video tag.
           </video>
 </article>
         
-        {% elif post.image and post.video %}
-        <a href="{% url 'blog-detail' post.id %}"><img src="{{ post.image.url }}" class="card-img-top" alt="..."></a>
+        {% elif post.content %}
         
-        <video width="500" height="400" controls>
-            <source src="{{ post.video.url }}" type="video/mp4">
-            
-            Your browser does not support the video tag.
-          </video>
 </article>
 
 
 
 
         {% else %}
+        <a href="{% url 'blog-detail' post.id %}"><img src="{{ post.image.url }}" class="card-img-top" alt="..."></a><hr>
+        
+        <video width="500" height="300" controls>
+            <source src="{{ post.video.url }}" type="video/mp4">
+            
+            Your browser does not support the video tag.
+          </video>
 </article>
 
 

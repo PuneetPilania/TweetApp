@@ -3,27 +3,33 @@
 {% block content %}
 <div class="content-section">
     <div class="media">
-        <img class="rounded-circle account-img" src='{{ user.profile.image.url }}'>
+        <img class="rounded-circle account-img" src='{{ users.profile.image.url }}'>
         <div class="media-body">
-            <h2 class="account-heading">{{ user.username }}</h2>
-            <p class="text-secondary">{{ user.email }}</p>
+            <div>
+                <h2 class="account-heading">{{ users.username }}
+                
+                
+                    <a href="{{ users.profile.get_follow_url }}"><button class="btn btn-primary mx-2">{% if following %} Unfollow {% else %} Follow {% endif %}</button></a>
+                    <a href="{% url 'messege' users.username %}"><button class="btn btn-primary mx-2">Messege</button></a>
+                
+                </h2>
+            </div>
+            <p class="text-secondary">{{ users.email }}</p>
             <hr />
-            <p> Followers: {{ user.followed_by.all.count }} </p>
+            <p> Followers: {{ users.followed_by.all.count }} </p>
             <p>
-                <a class="btn btn-link" href="{{ user.profile.get_follow_url }}">{% if following %} Unfollow {% else %} Follow {% endif %}
-                </a>
             </p>
             <hr />
-            <h3>Following <small>{{ user.profile.get_following.count }}</small></h3>
-            {% for users in user.profile.get_following %}
+            <h3>Following <small>{{ users.profile.get_following.count }}</small></h3>
+            {% for users in users.profile.get_following %}
             <a href="/{{users.username}}">{{users.username}}</a>
             {% empty %}
             <h6>Not following any users</h6>
             {% endfor %}
             <hr />
             <h3>Followed By</h3>
-            {% for profile in user.followed_by.all %}
-            <a href="/{{ profile.user.username }}">{{profile.user.username}}</a><br>
+            {% for profile in users.followed_by.all %}
+            <a href="/{{ profile.users.username }}">{{profile.users.username}}</a><br>
             {% empty %}
             <h6>Not followed any users</h6>
             {% endfor %}
@@ -40,8 +46,6 @@
             <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
         </div>
         <p class="article-content">{{ post.content }}</p>
-
-        
         {% if post.image %}
         <a href="{% url 'blog-detail' post.id %}"><img src="{{ post.image.url }}" class="card-img-top" alt="..."></a>
 </article>
@@ -51,7 +55,6 @@
     Your browser does not support the video tag.
 </video>
 </article>
-
 {% elif post.image and post.video %}
 <a href="{% url 'blog-detail' post.id %}"><img src="{{ post.image.url }}" class="card-img-top" alt="..."></a>
 <video width="500" height="400" controls>
@@ -59,13 +62,10 @@
     Your browser does not support the video tag.
 </video>
 </article>
-
 {% else %}
 </article>
 {% endif %}
 {% endfor %}
-
-
 <!-- For Pagiante  -->
 {% if is_paginated %}
 {% if page_obj.has_previous %}

@@ -1,11 +1,12 @@
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render,get_object_or_404,render_to_response
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.views import View
-from .models import Post
-from django.urls import reverse_lazy
+from .models import Post, Messege
+from django.urls import reverse, reverse_lazy 
 from math import ceil
+
 
 
 # All Post List View
@@ -62,6 +63,7 @@ def search(request):
 # Post detail
 class BlogDetailView(LoginRequiredMixin,DetailView):
 	model=Post
+	
 
 
 
@@ -101,10 +103,52 @@ class BlogDeleteView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
 			return True
 		return False
 
+class MessegeDeleteView(LoginRequiredMixin,DeleteView):
+	model=Messege
+	
+	def get_success_url(self):
+		messege=self.get_object()
+		return reverse('messege', kwargs={'user': messege.messege_to})
+
+	
+
+
+class MessengerView(LoginRequiredMixin,CreateView):
+	model=Messege
+	fields=['messege_from','messege_to','messege']
 
 
 
+	def get_context_data(self, **kwargs):
+		context=super(MessengerView, self).get_context_data(**kwargs)
+		messege_from=self.request.user
+		messege_to=self.kwargs['user']
+		context['messege_to']=messege_to
+		context['messege_from']=messege_from
+		
+		messeges=Messege.objects.filter(messege_from=messege_from).filter(messege_to=messege_to)
+		msg1=Messege.objects.filter(messege_from=messege_to).filter(messege_to=messege_from)
+		
+		context["messege_sorted"]=messeges|msg1
+		return context
 
-
+		
+		
 def about(request):
     return render(request, 'blog/about.html', {'title': 'About'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

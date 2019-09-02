@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import BlogListView,BlogDetailView,BlogCreateView,BlogUpdateView,BlogDeleteView
+from .views import BlogListView,BlogDetailView,BlogCreateView,BlogUpdateView,BlogDeleteView, MessengerView,MessegeDeleteView
 from . import views
 
 
@@ -13,6 +13,8 @@ urlpatterns=[
     path('new/',BlogCreateView.as_view(),name='blog-create'),
     path('about/',views.about,name='blog-about'),
     path('search/',views.search,name='Search'),
+    path('messege/<str:user>/',MessengerView.as_view(),name='messege'),
+    path('messege/<int:pk>/delete/',MessegeDeleteView.as_view(),name='messege-delete'),
     
 ]
 

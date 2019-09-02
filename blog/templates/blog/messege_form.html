@@ -1,0 +1,54 @@
+{% extends 'blog/base.html' %}
+{% block css %}
+<style>
+    .messengerBody{
+    max-width: auto;
+    height:83vh;
+}
+
+#container{
+    
+    height:100%;
+    overflow:auto;
+
+}
+  
+  
+</style>
+{% endblock %}
+{% block content %}
+<div class="messengerBody">
+    <h1 id="messenger">Messenger</h1>
+    <hr>
+    <div id="container" class="container">
+        {% for msg in messege_sorted %}
+        {{msg.messege_from}} {{msg.id}}
+        <div id="messege">{{msg.messege}}</div>
+        
+        <a id="deleteBtn" href="{% url 'messege-delete' msg.id %}"><button class="btn btn-primary ">Delete</button></a>
+       
+        <hr>
+        {% endfor %}
+
+        <hr>
+        <form method="post" action="">{% csrf_token %}
+            <div class="form-group">
+                <input type="hidden" name="messege_to" value="{{messege_to}}" id="messege_to">
+                <input type="hidden" name="messege_from" value="{{messege_from}}" id="messege_to">
+                <label for="exampleInputEmail1">Text messege</label>
+                <input type="text" class="form-control" id="messege" name='messege' placeholder="Enter Messege here">
+            </div>
+            <button type="submit" id='messegeBtn' class="btn btn-primary my-2">Messenge</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+var objDiv = document.getElementById("container");
+objDiv.scrollTop = objDiv.scrollHeight;
+
+
+
+</script>
+{% endblock %}

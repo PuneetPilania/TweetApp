@@ -39,9 +39,10 @@ class UserPostListView(LoginRequiredMixin,ListView):
 
         users=get_object_or_404(User,username__iexact=self.kwargs.get("username"))
         context=super(UserPostListView, self).get_context_data(*args,**kwargs)
-        context['user']=users
+        context['users']=users
         context['posts']=Post.objects.filter(author=users).order_by('-date_posted')
         context['following']=Profile.objects.is_following(self.request.user, users)
+        context['auth_user']=self.request.user
         return context
 
 
